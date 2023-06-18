@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Notes App</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        h1 {
+	text-align: center;
+}
+.div1{
+    
+    justify-content: center;
+    display: block;
+    margin: auto;
+    width: 30%;
+
+}
+
+form {
+    background-color: rgb(102, 166, 240);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 20px auto;
+	max-width: 600px;
+    border: 2px solid rgb(143, 143, 143);
+    border-radius: 15px;
+}
+
+label, input, textarea {
+	display: block;
+	margin: 10px 0;
+}
+
+input[type=text], textarea{
+    width: 90%;
+
+}
+
+textarea {
+	height: 200px;
+    background-color: rgb(231, 246, 255);
+    border-radius: 4px;
+}
+
+button {
+	margin: 20px 0;
+    
+    background-color: rgb(34, 122, 221);
+    border-radius: 5px;
+    border: 1px solid black;
+    padding: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+/* .note{
+	display: inline-block;
+	margin-left: 10%;
+} */
+
+#notesList {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: 20px;
+	border: 1px solid #ccc;
+}
+
+#btn1{
+	display: flex;
+	margin: auto;
+}
+    </style>
+</head>
+<body>
+    <div class="div1">
+	<h1>Notes App</h1>
+	<form id="notesForm">
+		<label for="noteDate">Date:</label>
+		<input type="date" id="noteDate" required>
+		<label for="noteSubject">Subject:</label>
+		<input type="text" id="noteSubject" required>
+		<label for="noteText">Notes:</label>
+		<textarea id="noteText" required></textarea>
+		<button type="submit" id="btn">Save Note</button>
+	</form>
+</div>
+<br>
+	<button onclick="renderNotes()" id="btn1">Show Notes</button>
+	<div id="notesList"></div>
+
+	<script>
+        const notesForm = document.querySelector('#notesForm');
+		const notesList = document.querySelector('#notesList');
+
+		let notes = JSON.parse(localStorage.getItem('notes')) || [];
+
+function renderNotes() {
+	notesList.innerHTML = '';
+	if (notes.length === 0) {
+		notesList.innerHTML = '<p>No notes to display.</p>';
+	} else {
+		for (let i = 0; i < notes.length; i++) {
+			const note = notes[i];
+			notesList.innerHTML += `
+				<div class="note">
+					<p><strong>Date:</strong> ${note.date}</p>
+					<p><strong>Subject:</strong> ${note.subject}</p>
+					<p><strong>Notes:</strong> ${note.text}</p>
+					<button class="deleteNote" data-index="${i}">Delete Note</button>
+				</div>
+			`;
+		}
+	}
+}
+
+function handleSubmit(event) {
+	event.preventDefault();
+	const noteDate = notesForm.querySelector('#noteDate').value;
+	const noteSubject = notesForm.querySelector('#noteSubject').value;
+	const noteText = notesForm.querySelector('#noteText').value;
+	const note = {
+		date: noteDate,
+		subject: noteSubject,
+		text: noteText
+	};
+	notes.push(note);
+	localStorage.setItem('notes', JSON.stringify(notes));
+	// renderNotes();
+	notesForm.reset();
+}
+
+function handleDelete(event) {
+	if (event.target.classList.contains('deleteNote')) {
+		const index = event.target.getAttribute('data-index');
+		notes.splice(index, 1);
+		localStorage.setItem('notes', JSON.stringify(notes));
+		renderNotes();
+	}
+}
+
+notesForm.addEventListener('submit', handleSubmit);
+notesList.addEventListener('click', handleDelete);
+
+// renderNotes();
+
+    </script>
+</body>
+</html>
